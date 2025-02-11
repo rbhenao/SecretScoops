@@ -1,0 +1,256 @@
+.app-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: linear-gradient(180deg, #d1f7f8, #d6d0eb);
+}
+
+/*auth*/
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 80vw;
+  height: 100%;
+}
+
+.auth-container .auth-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 25%;
+}
+
+.auth-container input {
+  width: 95%;
+  height: 40px;
+  margin: 10px 0;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.auth-container button {
+  width: 95%;
+  margin: 10px 0;
+}
+
+.auth-container .auth-footer {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/*dashboard*/
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 80vw;
+  height: 100%;
+}
+
+.dashboard-container .tabs {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 20px 0;
+}
+
+.dashboard-container .tabs button {
+  margin: 0 5px;
+  background: #a4e8eb;
+  font-weight: bold;
+  color: #1088ac;
+}
+
+.dashboard-container .tabs button:hover {
+  background: #a0e1e4;
+}
+
+.dashboard-container .tab-content {
+  padding-top: 1em;
+  width: 50%;
+  min-height: 70%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  border: 4px double #87ccdd;
+}
+
+/*menu*/
+.menu-tab .menu-items {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  margin: 20px 0;
+}
+
+.menu-tab .menu-items li {
+  list-style: none;
+  margin: 10px 0;
+}
+
+.menu-tab .menu-items button {
+  margin-left: 10px;
+  font-weight: bold;
+}
+
+.menu-tab .checkout-button {
+  margin: 10px 0 20px 0;
+}
+
+/*orders*/
+.orders-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.active-orders {}
+
+.active-orders li {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin-bottom: 20px;
+  padding: 10px;
+}
+
+.order-summary {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-self: center;
+  justify-content: center;
+  
+  padding: 10px;
+}
+
+.order-status-bar {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.order-status-bar .status-step {
+  padding: 10px 15px;
+  border-radius: 5px;
+  background-color: #ccc;
+  font-weight: bold;
+}
+
+.order-status-bar .active {
+  background-color: #ff9800;
+  color: white;
+}
+
+.order-status-bar .completed {
+  background-color: #4caf50;
+  color: white;
+}
+
+.order-status-bar .arrow {
+  font-size: 26px;
+  font-weight: bold;
+  color: #77a7bd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delivered-status {
+  color: #4caf50;
+}
+
+/*profile*/
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.profile-form label {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+.profile-form input {
+  padding: 8px;
+  margin-top: 4px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+.profile-form button {
+  padding: 10px 15px;
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/*checkout*/
+.checkout-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 80vw;
+  height: 100%;
+}
+
+.checkout-container .checkout-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 25%;
+}
+
+.checkout-container .checkout-form .checkout-form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+.checkout-container .checkout-form .checkout-form-group label {
+  margin-bottom: 10px;
+}
+
+.checkout-container .checkout-form .checkout-form-group input {
+  height: 20px;
+  margin: 10px 0 10px 10px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.checkout-container .checkout-form .checkout-form-group select {
+  margin-left: 10px;
+}
+
+.checkout-container .checkout-form .checkout-form-group button {
+  margin-top: 20px;
+  width: 100%;
+}
