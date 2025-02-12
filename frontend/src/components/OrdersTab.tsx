@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const sampleOrders = [
   { id: 1, items: ["Vanilla Ice Cream", "Chocolate Ice Cream"], total: 2.98, status: "Delivered" },
@@ -6,10 +6,17 @@ const sampleOrders = [
   { id: 3, items: ["Mint Chocolate Chip"], total: 0.99, status: "Processing" }
 ];
 
-const orderStatuses = ["Processing", "Prepared", "Out for Delivery", "Delivered"];
+const orderStatuses = ["Processing", "Preparing", "Out for Delivery", "Delivered"];
 
 export default function OrdersTab() {
   const [orders, setOrders] = useState(sampleOrders);
+
+  useEffect(() => {
+    fetch("http://localhost:4000/orders")
+      .then(response => response.json())
+      .then(data => setOrders(data.orders))
+      .catch(error => console.error("Error fetching orders:", error));
+  }, []);
 
   return (
     <div className="orders-tab">

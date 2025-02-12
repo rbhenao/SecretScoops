@@ -157,6 +157,13 @@
 .order-status-bar .active {
   background-color: #ff9800;
   color: white;
+  animation: blink 3s infinite alternate;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
 }
 
 .order-status-bar .completed {

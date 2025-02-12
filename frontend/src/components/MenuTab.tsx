@@ -1,16 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const menuItems = [
-  { id: 1, name: "Vanilla Ice Cream", price: 0.99 },
-  { id: 2, name: "Chocolate Ice Cream", price: 1.99 },
-  { id: 3, name: "Strawberry Ice Cream", price: 1.99 },
-  { id: 4, name: "Mint Chocolate Chip", price: 0.99 }
-];
-
 export default function MenuTab() {
+  const [menuItems, setMenuItems] = useState<{ id: number; name: string; price: number }[]>([]);
   const [cart, setCart] = useState<{ id: number; name: string; price: number }[]>([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch("http://localhost:4000/menu")
+      .then(response => response.json())
+      .then(data => setMenuItems(data.menu))
+      .catch(error => console.error("Error fetching menu items:", error));
+  }, []);
 
   const addToCart = (item: { id: number; name: string; price: number }) => {
     setCart([...cart, item]);
@@ -49,3 +50,4 @@ export default function MenuTab() {
     </div>
   );
 }
+

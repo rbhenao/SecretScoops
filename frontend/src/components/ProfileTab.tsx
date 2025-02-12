@@ -1,14 +1,15 @@
-import { useState } from "react";
-
-const sampleUser = {
-  name: "John Doe",
-  email: "john.doe@example.com",
-  phone: "123-456-7890",
-  address: "123 Ice Cream St, Sweet City, IC"
-};
+import { useState, useEffect } from "react";
 
 export default function ProfileTab() {
-  const [user, setUser] = useState(sampleUser);
+  const [user, setUser] = useState({ name: "", email: "", phone: "", address: "" });
+
+  useEffect(() => {
+    fetch("http://localhost:4000/users/profile")
+      .then(response => response.json())
+      .then(data => setUser(data.user))
+      .catch(error => console.error("Error fetching user profile:", error));
+  }, []);
+
   return (
     <div className="profile-container">
       <h2>Profile</h2>

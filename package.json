@@ -4,5 +4,24 @@
   },
   "devDependencies": {
     "@types/react-router-dom": "^5.3.3"
-  }
+  },
+  "name": "secretscoops",
+  "version": "1.0.0",
+  "description": "High security ice cream delivery - by Don Gelato",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rbhenao/SecretScoops.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/rbhenao/SecretScoops/issues"
+  },
+  "homepage": "https://github.com/rbhenao/SecretScoops#readme"
 }
