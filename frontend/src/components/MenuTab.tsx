@@ -1,19 +1,29 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+interface MenuItem {
+  id: number;
+  name: string;
+  price: number;
+}
+
+interface CartItem extends MenuItem {}
+
+type Cart = CartItem[];
+
 export default function MenuTab() {
-  const [menuItems, setMenuItems] = useState<{ id: number; name: string; price: number }[]>([]);
-  const [cart, setCart] = useState<{ id: number; name: string; price: number }[]>([]);
+  const [cart, setCart] = useState<Cart>([]);
+  const [menu, setMenu] = useState<MenuItem[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://localhost:4000/menu")
       .then(response => response.json())
-      .then(data => setMenuItems(data.menu))
-      .catch(error => console.error("Error fetching menu items:", error));
+      .then(data => setMenu(data.menu))
+      .catch(error => console.error("Error fetching menu:", error));
   }, []);
 
-  const addToCart = (item: { id: number; name: string; price: number }) => {
+  const addToCart = (item: MenuItem) => {
     setCart([...cart, item]);
   };
 
@@ -28,7 +38,7 @@ export default function MenuTab() {
     <div className="menu-tab">
       <h2>Menu</h2>
       <ul className="menu-items">
-        {menuItems.map((item) => (
+        {menu.map((item) => (
           <li key={item.id}>
             {item.name} - ${item.price.toFixed(2)}
             <button onClick={() => addToCart(item)}>Add</button>
@@ -50,4 +60,3 @@ export default function MenuTab() {
     </div>
   );
 }
-

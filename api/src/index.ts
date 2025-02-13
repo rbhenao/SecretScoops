@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import menuRoutes from "./routes/menu";
 import orderRoutes from "./routes/orders";
 import userRoutes from "./routes/users";
+import checkoutRoutes from "./routes/checkout";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -24,6 +25,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/menu", menuRoutes);
 app.use("/orders", orderRoutes);
 app.use("/users", userRoutes);
+app.use("/checkout", checkoutRoutes);
 
 // Start server
 app.listen(PORT, () => {

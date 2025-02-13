@@ -1,7 +1,13 @@
 import { Router, Request, Response } from "express";
 const menuRoutes = Router();
 
-const menuItems = [
+interface MenuItem {
+  id: number;
+  name: string;
+  price: number;
+}
+
+const menuItems: MenuItem[] = [
   { id: 1, name: "Vanilla Ice Cream", price: 0.99 },
   { id: 2, name: "Chocolate Ice Cream", price: 2.99 },
   { id: 3, name: "Strawberry Ice Cream", price: 1.99 },

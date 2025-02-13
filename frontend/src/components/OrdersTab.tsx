@@ -1,22 +1,51 @@
 import { useState, useEffect } from "react";
 
-const sampleOrders = [
-  { id: 1, items: ["Vanilla Ice Cream", "Chocolate Ice Cream"], total: 2.98, status: "Delivered" },
-  { id: 2, items: ["Strawberry Ice Cream"], total: 1.99, status: "Out for Delivery" },
-  { id: 3, items: ["Mint Chocolate Chip"], total: 0.99, status: "Processing" }
-];
+interface MenuItem {
+  id: number;
+  name: string;
+  price: number;
+}
+
+interface Order {
+  id: number;
+  items: MenuItem[];
+  total: number;
+  status: string;
+}
 
 const orderStatuses = ["Processing", "Preparing", "Out for Delivery", "Delivered"];
 
 export default function OrdersTab() {
-  const [orders, setOrders] = useState(sampleOrders);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [polling, setPolling] = useState<number | null>(null);
 
-  useEffect(() => {
+  const fetchOrders = () => {
     fetch("http://localhost:4000/orders")
       .then(response => response.json())
-      .then(data => setOrders(data.orders))
+      .then(data => {
+        console.log("Fetched Orders:", data.orders);
+        setOrders(data.orders);
+      })
       .catch(error => console.error("Error fetching orders:", error));
-  }, []);
+  };
+
+  //useEffect(() => {
+  //  fetchOrders();
+  //  
+  //  const hasActiveOrders = orders.some(order => order.status !== "Delivered");
+  //  
+  //  if (hasActiveOrders && !polling) {
+  //    const interval = window.setInterval(fetchOrders, 10000);
+  //    setPolling(interval);
+  //  } else if (!hasActiveOrders && polling) {
+  //    clearInterval(polling);
+  //    setPolling(null);
+  //  }
+  //  
+  //  return () => {
+  //    if (polling) clearInterval(polling);
+  //  };
+  //}, [orders]);
 
   return (
     <div className="orders-tab">
@@ -26,7 +55,7 @@ export default function OrdersTab() {
         {orders.filter(order => order.status !== "Delivered").map(order => (
           <li key={order.id}>
             <div className="order-summary">
-              <strong>Order #{order.id}</strong> - {order.items.join(", ")} - ${order.total.toFixed(2)}
+              <strong>Order #{order.id}</strong> - {order.items.map(item => item.name).join(", ")} - ${order.total.toFixed(2)}
             </div>
             <div className="order-status-bar">
               {orderStatuses.map((status, index) => (
@@ -45,10 +74,11 @@ export default function OrdersTab() {
       <ul>
         {orders.filter(order => order.status === "Delivered").map(order => (
           <li key={order.id}>
-            <strong>Order #{order.id}</strong> - {order.items.join(", ")} - ${order.total.toFixed(2)} - <strong className="delivered-status">{order.status}</strong>
+            <strong>Order #{order.id}</strong> - {order.items.map(item => item.name).join(", ")} - ${order.total.toFixed(2)} - <strong className="delivered-status">{order.status}</strong>
           </li>
         ))}
       </ul>
     </div>
   );
 }
+

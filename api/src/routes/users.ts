@@ -1,7 +1,14 @@
 import { Router, Request, Response } from "express";
 const userRoutes = Router();
 
-const sampleUser = {
+interface User {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+}
+
+const sampleUser: User = {
   name: "John Doe",
   email: "john.doe@example.com",
   phone: "123-456-7890",

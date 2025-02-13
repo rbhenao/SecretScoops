@@ -89,6 +89,11 @@
   border: 4px double #87ccdd;
 }
 
+.dashboard-container .tabs button.active-tab {
+  background-color: #68dae0;
+  outline: 2px solid #89d4eb;
+}
+
 /*menu*/
 .menu-tab .menu-items {
   display: flex;
@@ -260,4 +265,14 @@
 .checkout-container .checkout-form .checkout-form-group button {
   margin-top: 20px;
   width: 100%;
+}
+
+.success-message {
+  text-align: center;
+}
+
+.success-message button {
+  color: #fff;
+  font-weight: bold;
+  background-color: #4caf50;
 }
