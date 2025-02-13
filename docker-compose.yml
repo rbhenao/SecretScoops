@@ -1,0 +1,106 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    environment:
+      FRONTEND_PORT: ${FRONTEND_PORT}
+      VITE_API_URL: ${VITE_API_URL}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - api
+    restart: always
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    environment:
+      PORT: ${API_PORT}
+      NODE_ENV: ${NODE_ENV}
+      DATABASE_URL: ${DATABASE_URL}
+      SQS_ENDPOINT: ${SQS_ENDPOINT}
+      SQS_QUEUE_NAME: ${SQS_QUEUE_NAME}
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+    command: ["/bin/sh", "-c", "npm install && npx nodemon --legacy-watch src/index.ts"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      sqs:
+        condition: service_started
+    restart: always
+
+  workers:
+    build:
+      context: ./workers
+      dockerfile: Dockerfile
+    environment:
+      DOCKER_ENV: "true"
+      WORKER_SERVICE_NAME: ${WORKER_SERVICE_NAME}
+      DATABASE_URL: ${DATABASE_URL}
+      PGUSER: ${PGUSER}
+      PGHOST: ${PGHOST}
+      PGPORT: ${PGPORT}
+      PGDATABASE: ${PGDATABASE}
+      PGPASSWORD: ${PGPASSWORD}
+      SQS_ENDPOINT: ${SQS_ENDPOINT}
+      SQS_QUEUE_NAME: ${SQS_QUEUE_NAME}
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    volumes:
+      - ./workers:/app
+      - /app/node_modules
+    command: ["/bin/sh", "-c", "npm install && npx nodemon --legacy-watch src/index.ts"]
+    depends_on:
+      - api
+      - postgres
+      - sqs
+    restart: always
+
+  postgres:
+    image: postgres:15
+    container_name: secret_scoops_db
+    restart: always
+    ports:
+      - "${PGPORT}:${PGPORT}"
+    environment:
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+      POSTGRES_DB: ${PGDATABASE}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PGUSER} -d ${PGDATABASE}"]
+      interval: 5s
+      retries: 5
+
+  sqs:
+    image: softwaremill/elasticmq
+    container_name: local-sqs
+    ports:
+      - "${SQS_PORT}:${SQS_PORT}"
+      - "${SQS_UI_PORT}:${SQS_UI_PORT}"
+    environment:
+      - DISABLE_UI=false
+      - ELASTICMQ_OPTS=-Dconfig.file=/opt/elasticmq.conf
+    volumes:
+      - ./sqs/elasticmq.conf:/opt/elasticmq.conf:ro
+
+volumes:
+  postgres_data:
+    driver: local

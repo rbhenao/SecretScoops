@@ -26,14 +26,10 @@ orderRoutes.get("/", async (req: Request, res: Response) => {
   try {
     const result = await pool.query("SELECT id, items::text, total, status FROM orders ORDER BY created_at DESC");
     
-    console.log("Fetched Orders from DB:", result.rows);
-    
     const orders: Order[] = result.rows.map(order => {
-      console.log("Processing Order Row:", order);
       let parsedItems: MenuItem[] = [];
       try {
         parsedItems = JSON.parse(order.items) as MenuItem[];
-        console.log("Json Parsed Items:", parsedItems);
       } catch (error) {
         console.error("Error parsing JSON for order items:", error);
       }

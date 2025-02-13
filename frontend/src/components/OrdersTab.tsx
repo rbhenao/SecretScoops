@@ -17,7 +17,7 @@ const orderStatuses = ["Processing", "Preparing", "Out for Delivery", "Delivered
 
 export default function OrdersTab() {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [polling, setPolling] = useState<number | null>(null);
+  const [activeOrders, setActiveOrders] = useState<boolean>(false);
 
   const fetchOrders = () => {
     fetch("http://localhost:4000/orders")
@@ -25,35 +25,25 @@ export default function OrdersTab() {
       .then(data => {
         console.log("Fetched Orders:", data.orders);
         setOrders(data.orders);
+        setActiveOrders(data.orders.some((order: Order) => order.status !== "Delivered"));
       })
       .catch(error => console.error("Error fetching orders:", error));
   };
 
-  //useEffect(() => {
-  //  fetchOrders();
-  //  
-  //  const hasActiveOrders = orders.some(order => order.status !== "Delivered");
-  //  
-  //  if (hasActiveOrders && !polling) {
-  //    const interval = window.setInterval(fetchOrders, 10000);
-  //    setPolling(interval);
-  //  } else if (!hasActiveOrders && polling) {
-  //    clearInterval(polling);
-  //    setPolling(null);
-  //  }
-  //  
-  //  return () => {
-  //    if (polling) clearInterval(polling);
-  //  };
-  //}, [orders]);
-
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+  
   return (
     <div className="orders-tab">
       <h2>Orders</h2>
       <h3>Active Orders</h3>
+      {activeOrders && (
+        <button className="refresh-button" onClick={fetchOrders}>🔄 Refresh Orders</button>
+      )}
       <ul className="active-orders">
-        {orders.filter(order => order.status !== "Delivered").map(order => (
-          <li key={order.id}>
+        {orders.filter(order => order.status !== "Delivered").map((order,index) => (
+          <li key={index}>
             <div className="order-summary">
               <strong>Order #{order.id}</strong> - {order.items.map(item => item.name).join(", ")} - ${order.total.toFixed(2)}
             </div>
@@ -72,8 +62,8 @@ export default function OrdersTab() {
       </ul>
       <h3>Past Orders</h3>
       <ul>
-        {orders.filter(order => order.status === "Delivered").map(order => (
-          <li key={order.id}>
+        {orders.filter(order => order.status === "Delivered").map((order, index) => (
+          <li key={index}>
             <strong>Order #{order.id}</strong> - {order.items.map(item => item.name).join(", ")} - ${order.total.toFixed(2)} - <strong className="delivered-status">{order.status}</strong>
           </li>
         ))}

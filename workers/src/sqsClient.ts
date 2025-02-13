@@ -2,7 +2,13 @@ import AWS from "aws-sdk";
 import dotenv from "dotenv";
 import path from "path";
 
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
+// Determine which .env file to use
+const envPath =
+  process.env.DOCKER_ENV === "true"
+    ? path.resolve(__dirname, "../../.env") // Use root .env in Docker
+    : path.resolve(__dirname, "../.env"); // Use workers/.env for local dev
+
+dotenv.config({ path: envPath });
 
 const sqs = new AWS.SQS({
   endpoint: process.env.SQS_ENDPOINT, // Use local ElasticMQ

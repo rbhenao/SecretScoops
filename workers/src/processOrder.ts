@@ -19,7 +19,7 @@ export async function processOrder(order: Order) {
     console.log(activityMessages[newStatus as "Processing" | "Preparing" | "Out for Delivery" | "Delivered"]);
     
     // Simulate processing time for each status transition
-    await new Promise((resolve) => setTimeout(resolve, 15000));
+    await new Promise((resolve) => setTimeout(resolve, 10000));
     
     try {
       await pool.query("UPDATE orders SET status = $1 WHERE id = $2", [newStatus, order.id]);

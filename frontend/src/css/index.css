@@ -31,6 +31,11 @@ button:hover {
   background: #a4e8eb;
 }
 
+button:active {
+  background: #1088ac;
+  color: #fff;
+}
+
 li {
   list-style: none;
 }
