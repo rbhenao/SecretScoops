@@ -1,0 +1,54 @@
+name: AWS CLI Workflow with OIDC
+
+on:
+  workflow_dispatch:
+    inputs:
+      template_file:
+        description: "Path to the CloudFormation template file"
+        required: false
+        default: "infrastructure/cloudformation/templates/vpc-network-infra.yaml"
+      stack_name:
+        description: "Name of the CloudFormation stack"
+        required: false
+        default: "VPCInfraSecretScoops"
+      s3_prefix:
+        description: "S3 prefix for deployment artifacts"
+        required: false
+        default: "vpc"
+      tag_value:
+        description: "Tag value for resources"
+        required: false
+        default: "VPCInfraSecretScoops"
+
+jobs:
+  vpc-infra:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write  # Required for OIDC
+      contents: read   # Required for actions/checkout
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_ROLE_NAME }}
+          aws-region: us-west-1
+
+      - name: Run CFN Stack for VPC Infra
+        run: |
+            TEMPLATE_FILE_PATH=$(realpath "${{ inputs.template_file }}")
+            STACK_NAME="${{ inputs.stack_name }}"
+            S3_PREFIX="${{ inputs.s3_prefix }}"
+            TAG_VALUE="${{ inputs.tag_value }}"
+            ROLE_ARN="${{ secrets.AWS_ROLE_ARN }}"
+            S3_BUCKET="${{ secrets.AWS_S3_BUCKET }}"
+
+            cd infrastructure/cloudformation/scripts
+            chmod +x deploy_stack.sh
+
+            ./deploy_stack.sh -f "$TEMPLATE_FILE_PATH" -s "$STACK_NAME" -p "$S3_PREFIX" -t "$TAG_VALUE" -r "$ROLE_ARN" -b "$S3_BUCKET"
+            

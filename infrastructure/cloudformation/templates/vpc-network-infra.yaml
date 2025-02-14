@@ -1,0 +1,178 @@
+Description: VPC environment for deploying resources to multi-phase CI/CD (Dev, Test, Staging, Prod, Management).
+
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.17.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: MultiPhaseVPCScoops
+        
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: InternetGateway
+
+  AttachInternetGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  # Subnets for each phase (dev, test, staging, prod, management)
+
+  TestingPublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.17.3.0/24
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select [ 0, !GetAZs "" ]
+      Tags:
+        - Key: Name
+          Value: TestingPublicSubnetScoops
+
+  TestingPrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.17.4.0/24
+      AvailabilityZone: !Select [ 1, !GetAZs "" ]
+      Tags:
+        - Key: Name
+          Value: TestingPrivateSubnetScoops
+
+  ProductionPublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.17.7.0/24
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select [ 0, !GetAZs "" ]
+      Tags:
+        - Key: Name
+          Value: ProductionPublicSubnetScoops
+
+  ProductionPrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.17.8.0/24
+      AvailabilityZone: !Select [ 1, !GetAZs "" ]
+      Tags:
+        - Key: Name
+          Value: ProductionPrivateSubnetScoops 
+  
+  # Public Route Table for all phases
+  
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: TestPublicRouteTableScoops
+  
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachInternetGateway
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+  
+  TestingPublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref TestingPublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+ 
+  ProductionPublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref ProductionPublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  # Private Route Table
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: TestPrivateRouteTableScoops
+  
+  TestingPrivateSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref TestingPrivateSubnet
+      RouteTableId: !Ref PrivateRouteTable
+  
+  ProductionPrivateSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref ProductionPrivateSubnet
+      RouteTableId: !Ref PrivateRouteTable
+  
+  IPv6CidrBlock:
+    Type: AWS::EC2::VPCCidrBlock
+    Properties:
+      VpcId: !Ref VPC
+      AmazonProvidedIpv6CidrBlock: true
+
+  PublicRouteTableDefaultIPv6:
+    Type: AWS::EC2::Route
+    DependsOn: AttachInternetGateway
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationIpv6CidrBlock: '::/0'
+      GatewayId: !Ref InternetGateway
+
+Outputs:
+  VPCId:
+    Description: ID of the Test VPC
+    Value: !Ref VPC
+    Export:
+      Name: VPCMultiphase-VPCIdScoops
+
+  TestingPublicSubnetId:
+    Description: ID of the Public Subnet
+    Value: !Ref TestingPublicSubnet
+    Export:
+      Name: VPCMultiphase-TestingPublicSubnetIdScoops
+    
+  ProductionPublicSubnetId:
+    Description: ID of the Public Subnet
+    Value: !Ref ProductionPublicSubnet
+    Export:
+      Name: VPCMultiphase-ProductionPublicSubnetIdScoops
+  
+  TestingPrivateSubnetId:
+    Description: ID of the Private Subnet
+    Value: !Ref TestingPrivateSubnet
+    Export:
+      Name: VPCMultiphase-TestingPrivateSubnetIdScoops
+  
+  ProductionPrivateSubnetId:
+    Description: ID of the Private Subnet
+    Value: !Ref ProductionPrivateSubnet
+    Export:
+      Name: VPCMultiphase-ProductionPrivateSubnetIdScoops
+ 
+  PublicRouteTableId:
+    Description: ID of the Public Route Table
+    Value: !Ref PublicRouteTable
+    Export:
+      Name: VPCMultiphase-PublicRouteTableIdScoops
+
+  PrivateRouteTableId:
+    Description: ID of the Public Route Table
+    Value: !Ref PrivateRouteTable
+    Export:
+      Name: VPCMultiphase-PrivateRouteTableIdScoops
