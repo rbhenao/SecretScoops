@@ -49,5 +49,5 @@ jobs:
 
             cd infrastructure/cloudformation/scripts
 
-            ./deploy_stack.sh -f "$TEMPLATE_FILE_PATH" -s "$STACK_NAME" -p "$S3_PREFIX" -t "$TAG_VALUE" -r "$ROLE_ARN" -b "$S3_BUCKET" 
+            ./deploy_stack.sh -f "$TEMPLATE_FILE_PATH" -s "$STACK_NAME" -r "$ROLE_ARN" -b "$S3_BUCKET" -p "$S3_PREFIX" -v "$TAG_VALUE"  
             
