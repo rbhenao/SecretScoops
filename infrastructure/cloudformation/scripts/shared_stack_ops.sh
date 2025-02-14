@@ -1,8 +1,6 @@
 #!/bin/bash
 
 # Default values for optional parameters
-#DEFAULT_ROLE_ARN="arn:aws:iam::861351026415:role/CloudFormationAdmin"
-#DEFAULT_S3_BUCKET="henlab-cfn-templates"
 DEFAULT_REGION="us-west-1"
 DEFAULT_S3_PREFIX="cfn_template"
 

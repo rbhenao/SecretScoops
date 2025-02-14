@@ -48,7 +48,6 @@ jobs:
             S3_BUCKET="${{ secrets.AWS_S3_BUCKET }}"
 
             cd infrastructure/cloudformation/scripts
-            chmod +x deploy_stack.sh
 
-            ./deploy_stack.sh -f "$TEMPLATE_FILE_PATH" -s "$STACK_NAME" -p "$S3_PREFIX" -t "$TAG_VALUE" -r "$ROLE_ARN" -b "$S3_BUCKET"
+            ./deploy_stack.sh -f "$TEMPLATE_FILE_PATH" -s "$STACK_NAME" -p "$S3_PREFIX" -t "$TAG_VALUE" -r "$ROLE_ARN" -b "$S3_BUCKET" 
             
