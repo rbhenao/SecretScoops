@@ -1,0 +1,56 @@
+name: EC2 Instance for Secret Scoops
+
+on:
+  workflow_dispatch:
+    inputs:
+      template_file:
+        description: "Path to the CloudFormation template file"
+        required: false
+        default: "infrastructure/cloudformation/templates/ec2-launch.yaml"
+      stack_name:
+        description: "Name of the CloudFormation stack"
+        required: false
+        default: "EC2InstancePublicSubnetStackScoops"
+      s3_prefix:
+        description: "S3 prefix for deployment artifacts"
+        required: false
+        default: "ec2"
+      tag_value:
+        description: "Tag value for resources"
+        required: false
+        default: "EC2InstancePublicSubnetStackScoops"
+      stack_params:
+        description: "Stack parameters"
+        required: false
+        default: "ParameterKey=CIDRIpForSSH,ParameterValue=0.0.0.0/0 ParameterKey=CIDRIpForHTTP,ParameterValue=0.0.0.0/0"
+
+jobs:
+  vpc-infra:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write  # Required for OIDC
+      contents: read   # Required for actions/checkout
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_ROLE_NAME }}
+          aws-region: us-west-1
+
+      - name: Run CFN Stack for VPC Infra
+        run: |
+            TEMPLATE_FILE_PATH=$(realpath "${{ inputs.template_file }}")
+            STACK_NAME="${{ inputs.stack_name }}"
+            S3_PREFIX="${{ inputs.s3_prefix }}"
+            TAG_VALUE="${{ inputs.tag_value }}"
+            STACK_PARAMS="${{ inputs.stack_params }}"
+
+            cd infrastructure/cloudformation/scripts
+
+            # Run the script with the arguments
+            ./deploy_stack.sh -f "$TEMPLATE_FILE_PATH" -s "$STACK_NAME" -r "$ROLE_ARN" -b "$S3_BUCKET" -p "$S3_PREFIX" -v "$TAG_VALUE"  -o "$STACK_PARAMS"
