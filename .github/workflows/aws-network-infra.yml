@@ -1,4 +1,4 @@
-name: AWS CLI Workflow with OIDC
+name: VPC Infra Deployment
 
 on:
   workflow_dispatch:
