@@ -49,6 +49,8 @@ jobs:
             S3_PREFIX="${{ inputs.s3_prefix }}"
             TAG_VALUE="${{ inputs.tag_value }}"
             STACK_PARAMS="${{ inputs.stack_params }}"
+            ROLE_ARN="${{ secrets.AWS_ROLE_ARN }}"
+            S3_BUCKET="${{ secrets.AWS_S3_BUCKET }}"
 
             cd infrastructure/cloudformation/scripts
 
