@@ -6,7 +6,7 @@ on:
       template_file:
         description: "Path to the CloudFormation template file"
         required: false
-        default: "infrastructure/cloudformation/templates/ec2-launch.yaml"
+        default: "infrastructure/cloudformation/templates/ec2-launch.yml"
       stack_name:
         description: "Name of the CloudFormation stack"
         required: false
