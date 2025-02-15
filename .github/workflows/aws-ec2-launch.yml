@@ -50,7 +50,7 @@ jobs:
       
       # Step 2: Deploy CloudFormation Stack
       - name: Deploy CloudFormation Stack
-        uses: ./.github/actions/deploy-cloudformation
+        uses: ./.github/actions/deploy-stack
         with:
           template_file: ${{ inputs.template_file }}
           stack_name: ${{ inputs.stack_name }}
