@@ -10,13 +10,13 @@ mainSteps:
     action: "aws:runDocument"
     inputs:
       documentType: "SSMDocument"
-      documentName: "install_git"
+      documentPath: "install_git"
 
   - name: InstallDocker
     action: "aws:runDocument"
     inputs:
       documentType: "SSMDocument"
-      documentName: "install_docker"
+      documentPath: "install_docker"
 
   - action: aws:runShellScript
     name: CloneRepository
