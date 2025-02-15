@@ -23,10 +23,6 @@ on:
         description: "Stack parameters"
         required: false
         default: "ParameterKey=CIDRIpForSSH,ParameterValue=0.0.0.0/0 ParameterKey=CIDRIpForHTTP,ParameterValue=0.0.0.0/0"
-      app_root:
-        description: "Application root directory"
-        required: false
-        default: "/home/ec2-user/app"
 
 jobs:
   deploy:
