@@ -25,13 +25,18 @@ on:
         default: "ParameterKey=CIDRIpForSSH,ParameterValue=0.0.0.0/0 ParameterKey=CIDRIpForHTTP,ParameterValue=0.0.0.0/0"
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      # Placeholder test job
+      - name: Run Placeholder Tests
+        run: "echo 'Testing... TODO: Implement tests'"
   deploy:
     runs-on: ubuntu-latest
-
+    needs: test
     permissions:
       id-token: write  # Required for OIDC
       contents: read   # Required for actions/checkout
-
     steps:
       # Step 0: Checkout Code
       - name: Checkout Code
@@ -44,7 +49,16 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_ROLE_NAME }}
           aws-region: us-west-1
       
-      # Step 2: Deploy CloudFormation Stack
+      # Step 2: Store PGUSER and PGPASSWORD in AWS SSM
+      - name: Store PGUSER and PGPASSWORD in AWS SSM
+        uses: ./.github/actions/update-ssm-parameters
+        with:
+          aws-region: "us-west-1"
+          ssm-path: "/secretscoops"
+          pguser: "${{ secrets.PGUSER }}"
+          pgpassword: "${{ secrets.PGPASSWORD }}"
+      
+      # Step 3: Deploy CloudFormation Stack
       - name: Deploy CloudFormation Stack
         uses: ./.github/actions/deploy-stack
         with:
@@ -56,16 +70,9 @@ jobs:
           aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
           aws_s3_bucket: ${{ secrets.AWS_S3_BUCKET }}
 
-      # Step 3: Wait for CloudFormation Stack Completion
+      # Step 4: Wait for CloudFormation Stack Completion
       - name: Wait for Stack Completion
         run: infrastructure/cloudformation/scripts/wait_for_stack.sh "${{ inputs.stack_name }}"
-      
-      # Step 4: Store Secrets in AWS SSM
-      - name: Store Secrets in AWS SSM
-        uses: ./.github/actions/update-ssm-parameters
-        with:
-          aws-region: "us-west-1"
-          ssm-path: "/secretscoops"
       
       # Step 5: Deploy Application on EC2 Instance
       - name: Deploy Application on EC2 Instance

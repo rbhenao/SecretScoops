@@ -8,6 +8,12 @@ inputs:
   ssm-path:
     description: "Base path for storing secrets in AWS SSM Parameter Store"
     required: true
+  pguser:
+    description: "Postgres username"
+    required: true
+  pgpassword:
+    description: "Postgres password"
+    required: true
 
 runs:
   using: "composite"
@@ -18,13 +24,13 @@ runs:
         echo "Storing PGUSER in AWS SSM Parameter Store..."
         aws ssm put-parameter \
           --name "${{ inputs.ssm-path }}/PGUSER" \
-          --value "${{ secrets.PGUSER }}" \
+          --value "${{ inputs.pguser }}" \
           --type "SecureString" \
           --overwrite
 
         echo "Storing PGPASSWORD in AWS SSM Parameter Store..."
         aws ssm put-parameter \
           --name "${{ inputs.ssm-path }}/PGPASSWORD" \
-          --value "${{ secrets.PGPASSWORD }}" \
+          --value "${{ inputs.pgpassword }}" \
           --type "SecureString" \
           --overwrite
