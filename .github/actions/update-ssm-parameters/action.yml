@@ -1,0 +1,30 @@
+name: "Update AWS SSM Parameter Store"
+description: "Stores PGUSER and PGPASSWORD in AWS SSM Parameter Store"
+
+inputs:
+  aws-region:
+    description: "AWS region where the SSM parameters should be stored"
+    required: true
+  ssm-path:
+    description: "Base path for storing secrets in AWS SSM Parameter Store"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Store PGUSER and PGPASSWORD in AWS SSM Parameter Store
+      shell: bash
+      run: |
+        echo "Storing PGUSER in AWS SSM Parameter Store..."
+        aws ssm put-parameter \
+          --name "${{ inputs.ssm-path }}/PGUSER" \
+          --value "${{ secrets.PGUSER }}" \
+          --type "SecureString" \
+          --overwrite
+
+        echo "Storing PGPASSWORD in AWS SSM Parameter Store..."
+        aws ssm put-parameter \
+          --name "${{ inputs.ssm-path }}/PGPASSWORD" \
+          --value "${{ secrets.PGPASSWORD }}" \
+          --type "SecureString" \
+          --overwrite

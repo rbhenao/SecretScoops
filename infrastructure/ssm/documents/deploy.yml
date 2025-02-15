@@ -30,6 +30,26 @@ mainSteps:
         - "git clone https://github.com/$REPO.git ."
 
   - action: aws:runShellScript
+    name: ConfigureEnvironment
+    inputs:
+      runCommand:
+        - "#!/bin/bash"
+        - "REPO={{GitHubRepository}}"
+        - "APP_ROOT=\"/home/ec2-user/$(basename $REPO)\""
+        - "cd $APP_ROOT"
+
+        # Copy .env.example to .env
+        - "cp .env.example .env"
+
+        # Retrieve PGUSER and PGPASSWORD from AWS SSM
+        - "PGUSER=$(aws ssm get-parameter --name /secretscoops/PGUSER --with-decryption --query Parameter.Value --output text)"
+        - "PGPASSWORD=$(aws ssm get-parameter --name /secretscoops/PGPASSWORD --with-decryption --query Parameter.Value --output text)"
+
+        # Inject values into .env
+        - "sed -i \"s|PGUSER=.*|PGUSER=$PGUSER|g\" .env"
+        - "sed -i \"s|PGPASSWORD=.*|PGPASSWORD=$PGPASSWORD|g\" .env"
+
+  - action: aws:runShellScript
     name: RunDockerCompose
     inputs:
       runCommand:

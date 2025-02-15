@@ -60,6 +60,13 @@ jobs:
       - name: Wait for Stack Completion
         run: infrastructure/cloudformation/scripts/wait_for_stack.sh "${{ inputs.stack_name }}"
       
-      # Step 4: Deploy Application on EC2 Instance
+      # Step 4: Store Secrets in AWS SSM
+      - name: Store Secrets in AWS SSM
+        uses: ./.github/actions/update-ssm-parameters
+        with:
+          aws-region: "us-west-1"
+          ssm-path: "/secretscoops"
+      
+      # Step 5: Deploy Application on EC2 Instance
       - name: Deploy Application on EC2 Instance
         run: .github/scripts/deploy_app.sh "${{ inputs.stack_name }}" "${{github.repository}}"
