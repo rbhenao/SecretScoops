@@ -29,7 +29,7 @@ on:
         default: "/home/ec2-user/app"
 
 jobs:
-  vpc-infra:
+  deploy:
     runs-on: ubuntu-latest
 
     permissions:
@@ -66,4 +66,4 @@ jobs:
       
       # Step 4: Deploy Application on EC2 Instance
       - name: Deploy Application on EC2 Instance
-        run: .github/scripts/deploy_app.sh "${{ inputs.stack_name }}" "/home/ec2-user/${{github.event.repository.name}}"
+        run: .github/scripts/deploy_app.sh "${{ inputs.stack_name }}" "${{github.repository}}"
