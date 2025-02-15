@@ -1,0 +1,37 @@
+schemaVersion: "2.2"
+description: "Deploy the application by installing Git, Docker, and running Docker Compose."
+parameters:
+  AppRoot:
+    type: "String"
+    description: "The root directory where the application should be cloned and deployed."
+
+mainSteps:
+  - name: InstallGit
+    action: "aws:runDocument"
+    inputs:
+      documentName: "install_git"
+
+  - name: InstallDocker
+    action: "aws:runDocument"
+    inputs:
+      documentName: "install_docker"
+
+  - action: aws:runShellScript
+    name: CloneRepository
+    inputs:
+      runCommand:
+        - "#!/bin/bash"
+        - "APP_ROOT={{AppRoot}}"
+        - "mkdir -p $APP_ROOT"
+        - "cd $APP_ROOT"
+        - "git clone https://github.com/${{ github.repository }}.git ."
+
+  - action: aws:runShellScript
+    name: RunDockerCompose
+    inputs:
+      runCommand:
+        - "#!/bin/bash"
+        - "APP_ROOT={{AppRoot}}"
+        - "cd $APP_ROOT"
+        - "sudo systemctl start docker"
+        - "sudo -u ec2-user docker compose up --build -d"

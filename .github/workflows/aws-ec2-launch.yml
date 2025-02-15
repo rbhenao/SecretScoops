@@ -23,6 +23,10 @@ on:
         description: "Stack parameters"
         required: false
         default: "ParameterKey=CIDRIpForSSH,ParameterValue=0.0.0.0/0 ParameterKey=CIDRIpForHTTP,ParameterValue=0.0.0.0/0"
+      app_root:
+        description: "Application root directory"
+        required: false
+        default: "/home/ec2-user/app"
 
 jobs:
   vpc-infra:
@@ -33,26 +37,33 @@ jobs:
       contents: read   # Required for actions/checkout
 
     steps:
+      # Step 0: Checkout Code
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      # Step 1: Configure AWS Credentials
       - name: Configure AWS Credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_ROLE_NAME }}
           aws-region: us-west-1
+      
+      # Step 2: Deploy CloudFormation Stack
+      - name: Deploy CloudFormation Stack
+        uses: ./.github/actions/deploy-cloudformation
+        with:
+          template_file: ${{ inputs.template_file }}
+          stack_name: ${{ inputs.stack_name }}
+          s3_prefix: ${{ inputs.s3_prefix }}
+          tag_value: ${{ inputs.tag_value }}
+          stack_params: ${{ inputs.stack_params }}
+          aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
+          aws_s3_bucket: ${{ secrets.AWS_S3_BUCKET }}
 
-      - name: Run CFN Stack for VPC Infra
-        run: |
-            TEMPLATE_FILE_PATH=$(realpath "${{ inputs.template_file }}")
-            STACK_NAME="${{ inputs.stack_name }}"
-            S3_PREFIX="${{ inputs.s3_prefix }}"
-            TAG_VALUE="${{ inputs.tag_value }}"
-            STACK_PARAMS="${{ inputs.stack_params }}"
-            ROLE_ARN="${{ secrets.AWS_ROLE_ARN }}"
-            S3_BUCKET="${{ secrets.AWS_S3_BUCKET }}"
-
-            cd infrastructure/cloudformation/scripts
-
-            # Run the script with the arguments
-            ./deploy_stack.sh -f "$TEMPLATE_FILE_PATH" -s "$STACK_NAME" -r "$ROLE_ARN" -b "$S3_BUCKET" -p "$S3_PREFIX" -v "$TAG_VALUE"  -o "$STACK_PARAMS"
+      # Step 3: Wait for CloudFormation Stack Completion
+      - name: Wait for Stack Completion
+        run: infrastructure/cloudformation/scripts/wait_for_stack.sh "${{ inputs.stack_name }}"
+      
+      # Step 4: Deploy Application on EC2 Instance
+      - name: Deploy Application on EC2 Instance
+        run: .github/scripts/deploy_app.sh "${{ inputs.stack_name }}" "/home/ec2-user/${{github.event.repository.name}}"

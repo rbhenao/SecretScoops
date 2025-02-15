@@ -1,0 +1,44 @@
+name: "Deploy CloudFormation Stack"
+description: "Deploys a CloudFormation stack using a provided template and parameters."
+inputs:
+  template_file:
+    description: "Path to the CloudFormation template file"
+    required: true
+  stack_name:
+    description: "Name of the CloudFormation stack"
+    required: true
+  s3_prefix:
+    description: "S3 prefix for deployment artifacts"
+    required: true
+  tag_value:
+    description: "Tag value for resources"
+    required: true
+  stack_params:
+    description: "Stack parameters"
+    required: false
+    default: ""
+  aws_role_arn:
+    description: "IAM Role ARN for CloudFormation execution"
+    required: true
+  aws_s3_bucket:
+    description: "S3 Bucket for CloudFormation deployment artifacts"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Deploy CloudFormation Stack
+      shell: bash
+      run: |
+        TEMPLATE_FILE_PATH=$(realpath "${{ inputs.template_file }}")
+        STACK_NAME="${{ inputs.stack_name }}"
+        S3_PREFIX="${{ inputs.s3_prefix }}"
+        TAG_VALUE="${{ inputs.tag_value }}"
+        STACK_PARAMS="${{ inputs.stack_params }}"
+        ROLE_ARN="${{ inputs.aws_role_arn }}"
+        S3_BUCKET="${{ inputs.aws_s3_bucket }}"
+
+        cd infrastructure/cloudformation/scripts
+
+        # Deploy Stack
+        ./deploy_stack.sh -f "$TEMPLATE_FILE_PATH" -s "$STACK_NAME" -r "$ROLE_ARN" -b "$S3_BUCKET" -p "$S3_PREFIX" -v "$TAG_VALUE" -o "$STACK_PARAMS"

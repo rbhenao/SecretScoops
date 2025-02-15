@@ -18,7 +18,7 @@ interface Order {
   status: "Processing" | "Prepared" | "Out for Delivery" | "Delivered";
 }
 
-const sqsClient = new SQSClient({ region: "us-east-1" });
+const sqsClient = new SQSClient({ region: "us-west-1" });
 
 orderRoutes.post("/", async (req: Request, res: Response) => {
   const { name, address, paymentMethod, cart, total } = req.body;

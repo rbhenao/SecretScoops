@@ -1,0 +1,48 @@
+schemaVersion: '2.2'
+description: SSM Document to install Docker and Docker Compose on Amazon Linux 2023
+mainSteps:
+  - action: aws:runShellScript
+    name: UpdatePackages
+    inputs:
+      runCommand:
+        - "#!/bin/bash"
+        - "# Update the package index"
+        - "sudo yum update -y"
+
+  - action: aws:runShellScript
+    name: EnableDockerExtras
+    inputs:
+      runCommand:
+        - "#!/bin/bash"
+        - "# Enable Docker in Amazon Linux extras"
+        - "sudo amazon-linux-extras enable docker"
+        - "# Clean yum cache"
+        - "sudo yum clean metadata"
+
+  - action: aws:runShellScript
+    name: InstallDocker
+    inputs:
+      runCommand:
+        - "#!/bin/bash"
+        - "# Install Docker"
+        - "sudo yum install -y docker"
+
+  - action: aws:runShellScript
+    name: ConfigureDocker
+    inputs:
+      runCommand:
+        - "#!/bin/bash"
+        - "# Start the Docker service"
+        - "sudo service docker start"
+        - "# Add the ec2-user to the docker group"
+        - "sudo usermod -aG docker ec2-user"
+        - "# Enable Docker to start on boot"
+        - "sudo systemctl enable docker"
+
+  - action: aws:runShellScript
+    name: InstallDockerCompose
+    inputs:
+      runCommand:
+        - "#!/bin/bash"
+        - "# Switch to ec2-user and run the commands"
+        - "sudo -u ec2-user bash -c 'DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}; mkdir -p $DOCKER_CONFIG/cli-plugins; curl -SL https://github.com/docker/compose/releases/download/v2.32.0/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose; chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose; docker compose version'"

@@ -1,0 +1,17 @@
+schemaVersion: "2.2"
+description: "Install Git on Amazon Linux instances."
+mainSteps:
+  - action: aws:runShellScript
+    name: UpdatePackages
+    inputs:
+      runCommand:
+        - "#!/bin/bash"
+        - "# Update the package index"
+        - "sudo yum update -y"
+  - action: aws:runShellScript
+    name: InstallGit
+    inputs:
+      runCommand:
+        - "#!/bin/bash"
+        - "sudo yum install git -y"
+        - "git --version"
