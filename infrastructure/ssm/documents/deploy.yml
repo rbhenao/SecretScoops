@@ -28,6 +28,8 @@ mainSteps:
         - "mkdir -p $APP_ROOT"
         - "cd $APP_ROOT"
         - "git clone https://github.com/$REPO.git ."
+        - "echo 'Changing ownership of repository to ec2-user...'"
+        - "chown -R ec2-user:ec2-user $APP_ROOT"
 
   - action: aws:runShellScript
     name: ConfigureEnvironment
@@ -41,9 +43,9 @@ mainSteps:
         # Copy .env.example to .env
         - "cp .env.example .env"
 
-        # Retrieve PGUSER and PGPASSWORD from AWS SSM
-        - "PGUSER=$(aws ssm get-parameter --name /secretscoops/PGUSER --with-decryption --query Parameter.Value --output text)"
-        - "PGPASSWORD=$(aws ssm get-parameter --name /secretscoops/PGPASSWORD --with-decryption --query Parameter.Value --output text)"
+        # Retrieve PGUSER and PGPASSWORD from AWS SSM (using us-west-1)
+        - "PGUSER=$(aws ssm get-parameter --name /secretscoops/PGUSER --with-decryption --region us-west-1 --query Parameter.Value --output text)"
+        - "PGPASSWORD=$(aws ssm get-parameter --name /secretscoops/PGPASSWORD --with-decryption --region us-west-1 --query Parameter.Value --output text)"
 
         # Inject values into .env
         - "sed -i \"s|PGUSER=.*|PGUSER=$PGUSER|g\" .env"
