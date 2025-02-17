@@ -1,12 +1,7 @@
 # Secret Scoops AWS Architecture & Security
 
-## Overview
-Architecture and Security Diagrams for Secret Scoops. is deployed using a **multi-account AWS architecture** with a **secure, scalable CI/CD pipeline**. ensures **isolation**, **security**, and **automation** across **DEV, UAT, and PROD** environments.
-
----
-
 ## Architecture Summary
-Secret Scoops is deployed with a **multi-account AWS architecture** ensuring **isolation** and **security** across **DEV, UAT, and PROD** environments.
+Secret Scoops is deployed with a **multi-account AWS architecture** ensuring **isolation** and **security** and uses GitHub with GitActions for a **secure and scalable CI/CD pipeline** across **DEV, UAT, and PROD** environments.
 
 ### **Multi-Account AWS Setup**
 - **Root Account**: Centralized Security Hub, Configuration, IAM, and Log Management
