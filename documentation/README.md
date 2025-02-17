@@ -1,60 +1,62 @@
-# Secret Scoops AWS Architecture & Security Overview
+# Secret Scoops AWS Architecture & Security
 
 ## Overview
-Secret Scoops is deployed using a **multi-account AWS architecture** with a **secure, scalable CI/CD pipeline**. ensures **isolation**, **security**, and **automation** across **DEV, UAT, and PROD** environments.
+Architecture and Security Diagrams for Secret Scoops. is deployed using a **multi-account AWS architecture** with a **secure, scalable CI/CD pipeline**. ensures **isolation**, **security**, and **automation** across **DEV, UAT, and PROD** environments.
 
 ---
 
 ## Architecture Summary
+Secret Scoops is deployed with a **multi-account AWS architecture** ensuring **isolation** and **security** across **DEV, UAT, and PROD** environments.
+
 ### **Multi-Account AWS Setup**
-- **Root Account** → Centralized security & compliance management
-- **DEV Account** → Flexible for development & testing
-- **UAT Account** → Pre-production testing with stricter controls
-- **PROD Account** → Secure, high-availability production environment
+- **Root Account**: Centralized Security Hub, Configuration, IAM, and Log Management
+- **DEV Account**: Fewer Restrictions For Development and Testing
+- **UAT Account**: Pre-production, Stricter Controls, Used By Ops
+- **PROD Account**: Highly-Secure, Highly Available, Fault Tolerant, Production Environment
 
 ### **CI/CD Pipeline (GitHub Actions → AWS)**
-- **DEV** → Auto-deploys for testing
-- **UAT** → Manual approval required for pre-production testing
-- **PROD** → Manual approval, immutable deployments
+- **DEV**: Auto-deploys for testing
+- **UAT**: Auto-deploy after passing extensive suite of tests. Used for pre-production testing.
+- **PROD**: Manual approval, immutable deployments
 
 ### **Deployment Infrastructure**
-- **Backend** → AWS Lambda / ECS Fargate (Auto-Scaling, Zero-Downtime Deployments)
-- **Frontend** → S3 + CloudFront (Global CDN)
-- **Database** → RDS PostgreSQL (Multi-AZ, Encrypted, Auto-Backups)
-- **Messaging** → SNS / SQS for asynchronous communication
+- **DNS**: Route53
+- **Frontend**: S3 + CloudFront
+- **Backend**: API Gateway + Private VPC + Load Balancer + EC2 Instances
+- **Database**: RDS PostgreSQL (Multi-AZ, Encrypted, Auto-Backups)
+- **Workers**: SQS for Queues and SNS for notifications
 
 ---
 
-## 🔒 Security Strategy
-### **️Access Control**
-- **IAM & AWS SSO** → Centralized identity management, no direct IAM users
-- **Service Control Policies (SCPs)** → Prevents destructive actions (e.g., RDS deletion)
-- **Secrets Management** →
+## 🔒 Security
+### **Access Control**
+- **IAM**: Central identity management
+- **Service Control Policies (SCPs)**: applied per environment acacount (OU)
 - **Parameter Store** for DEV/UAT
 - **Secrets Manager** for PROD (Automatic Rotation, Encryption)
 
 ### **Infrastructure Security**
-- **No SSH access** → Instances are immutable (kill & redeploy)
-- **Auto Scaling & Self-Healing** → Ensures high availability
-- **VPC Isolation** → Private subnets for sensitive resources, public subnets for frontend/API Gateway
-- **S3 Encryption & Least Privilege** → No public buckets, IAM-restricted access
+- **No SSH access**: Immutable Instances (terminate & redeploy)
+- **VPC Isolation**: Private subnets for sensitive resources
+- **S3 Encryption**: No public buckets, IAM-restricted access, Principle of least privilege 
+- **Auto Scaling & Self-Healing**
 
 ### **️Application & API Security**
-- **API Gateway + AWS WAF** → Protects against SQL injection, bot traffic, DDoS
-- **JWT Authentication** → Secure API access
-- **Rate Limiting & Logging** → Prevent abuse, detect anomalies
+- **API Gateway + AWS WAF**: Protection from SQL injection, DDoS, bots
+- **JWT Authentication**: Secure API access
+- **Logging**: detect anomalies
 
 ### **Monitoring & Compliance**
-- **AWS CloudTrail** → Logs all API activity (stored in centralized S3, retained for compliance)
-- **AWS Config** → Enforces security rules (e.g., "S3 must not be public")
-- **Security Hub** → Monitors and alerts on suspicious activity
-- **SNS Alerts** → Immediate notification on security incidents
-
+- **Amazon Macie**: Scan All Bucket for HIPAA compliance. Detect PHI
+- **AWS CloudTrail**: Log all API activity (store in centralized S3, retained for compliance)
+- **AWS Config**: Enforce security rules (e.g., "S3 must not be public")
+- **Security Hub**: Monitors and alerts on suspicious activity
+- **SNS Alerts**: Immediate notification on security incidents
 ---
 
-## Best Practices Summary
-- **Immutable Infrastructure** → No manual changes, redeploy on failure  
-- **Least Privilege Access** → DevOps assumes roles, no persistent IAM users  
-- **Multi-Layered Security** → IAM, VPC, WAF, Encryption, Monitoring  
-- **Automated Compliance Enforcement** → AWS Config, GuardDuty, Security Hub  
-- **Zero-Trust Networking** → Only necessary ports open, no public DB access  
+## Best Practices
+- **Immutable Infrastructure** : No live hot-fixes, redeploy on failure  
+- **Principle Of Least Privilege**: Well defined IAM roles, permissions and access patterns  
+- **Multi-Layered Security** : IAM, VPC, WAF, Encryption, Monitoring, Amazon Macie  
+- **Automated Compliance** : AWS Config, Security Hub  
+- **Private Networking** : Only necessary ports open, no public access, use VPNs
