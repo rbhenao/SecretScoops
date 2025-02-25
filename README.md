@@ -21,7 +21,8 @@ Run the following command to create the file:
 cp .env.example .env
 ```
 
-## **2. Next open and edit the .env file and update needed values.
+## **2. Next open and edit the .env file and update enviornment variables.
+(For testing purposes default values can be used)
 
 ## **3. Build & Run with Docker
 ```sh
